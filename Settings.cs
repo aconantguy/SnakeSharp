@@ -6,7 +6,33 @@ using System.Threading.Tasks;
 
 namespace SnakeGame
 {
+    public enum Directions
+    {
+        Left,
+        Right,
+        Up,
+        Down
+    };
     internal class Settings
     {
+        public static int width { get; set; }
+        public static int height { get; set; }
+        public static int speed { get; set; }
+        public static int score { get; set; }
+        public static int points { get; set; }
+        public static bool gameOver { get; set; }
+        public static Directions direction { get; set; }
+
+        public Settings()
+        {
+            width = 16;
+            height = 16;
+            speed = 20;
+            score = 0;
+            points = 100;
+            gameOver = false;
+            direction = Directions.Down;
+        }
+
     }
 }
