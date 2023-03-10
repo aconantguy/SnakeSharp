@@ -19,6 +19,40 @@ namespace SnakeGame
             startGame();
         }
 
+        private void updateScreen(object sender, EventArgs e)
+        {
+            if (Settings.gameOver == true)
+            {
+                if (Input.KeyPress(Keys.Enter))
+                {
+                    startGame();
+                }
+            }
+            else
+            {
+                if (Input.KeyPress(Keys.Right) && Settings.direction != Directions.Left)
+                {
+                    Settings.direction = Directions.Right;
+                }
+                else if (Input.KeyPress(Keys.Left) && Settings.direction != Directions.Right)
+                {
+                    Settings.direction = Directions.Left;
+                }
+                else if (Input.KeyPress(Keys.Up) && Settings.direction != Directions.Down)
+                {
+                    Settings.direction = Directions.Up;
+                }
+                else if (Input.KeyPress(Keys.Down) && Settings.direction != Directions.Up)
+                {
+                    Settings.direction = Directions.Down;
+                }
+
+                move();
+            }
+
+            Canvas.Invalidate();
+        }
+
         private void keyDown(object sender, KeyEventArgs e)
         {
 

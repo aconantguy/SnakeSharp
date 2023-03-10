@@ -29,23 +29,23 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            pictureBox1 = new PictureBox();
+            Canvas = new PictureBox();
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
             gameTimer = new System.Windows.Forms.Timer(components);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             SuspendLayout();
             // 
-            // pictureBox1
+            // Canvas
             // 
-            pictureBox1.BackColor = Color.Gray;
-            pictureBox1.Location = new Point(0, 0);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(750, 460);
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
-            pictureBox1.Paint += updateGraphics;
+            Canvas.BackColor = Color.Gray;
+            Canvas.Location = new Point(0, 0);
+            Canvas.Name = "Canvas";
+            Canvas.Size = new Size(750, 460);
+            Canvas.TabIndex = 0;
+            Canvas.TabStop = false;
+            Canvas.Paint += updateGraphics;
             // 
             // label1
             // 
@@ -86,19 +86,19 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Controls.Add(pictureBox1);
+            Controls.Add(Canvas);
             Name = "Form1";
             Text = "Snake";
             KeyDown += keyDown;
             KeyUp += keyUp;
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)Canvas).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private PictureBox pictureBox1;
+        private PictureBox Canvas;
         private Label label1;
         private Label label2;
         private Label label3;
