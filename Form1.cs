@@ -76,7 +76,7 @@ namespace SnakeGame
 
                 for (int i = 0; i < Snake.Count; i++)
                 {
-                    if (i == 0) color = Brushes.LightGreen;
+                    if (i == 0) color = Brushes.Green;
                     else color = Brushes.DarkGreen;
 
                     screen.FillRectangle(color, new Rectangle(

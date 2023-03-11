@@ -27,7 +27,7 @@ namespace SnakeGame
         {
             width = 16;
             height = 16;
-            speed = 20;
+            speed = 10;
             score = 0;
             points = 100;
             gameOver = false;
