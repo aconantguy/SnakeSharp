@@ -50,7 +50,6 @@ namespace SnakeGame
                 {
                     Settings.direction = Directions.Down;
                 }
-
                 move();
             }
 
@@ -93,7 +92,7 @@ namespace SnakeGame
             }
             else
             {
-                EndLbl.Text = "Game Over\n Final Score: " + Settings.score + "\nPress Enter to Restart\n";
+                EndLbl.Text = "Game Over\nFinal Score: " + Settings.score + "\nPress Enter to Restart\n";
                 EndLbl.Visible = true;
             }
         }
@@ -113,7 +112,7 @@ namespace SnakeGame
 
         private void move()
         {
-            for (int i = 0; i >= Snake.Count; i++)
+            for (int i = Snake.Count - 1; i >= 0; i--)
             {
                 if (i == 0)
                 {
