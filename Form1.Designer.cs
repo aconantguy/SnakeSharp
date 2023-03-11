@@ -29,13 +29,18 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Canvas = new PictureBox();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
             gameTimer = new System.Windows.Forms.Timer(components);
+            Canvas = new PictureBox();
+            ScoreLbl = new Label();
+            ScoreNLbl = new Label();
+            EndLbl = new Label();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             SuspendLayout();
+            // 
+            // gameTimer
+            // 
+            gameTimer.Enabled = true;
+            gameTimer.Tick += updateScreen;
             // 
             // Canvas
             // 
@@ -47,45 +52,46 @@
             Canvas.TabStop = false;
             Canvas.Paint += updateGraphics;
             // 
-            // label1
+            // ScoreLbl
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            label1.Location = new Point(756, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(79, 31);
-            label1.TabIndex = 1;
-            label1.Text = "Score:";
+            ScoreLbl.AutoSize = true;
+            ScoreLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            ScoreLbl.Location = new Point(756, 0);
+            ScoreLbl.Name = "ScoreLbl";
+            ScoreLbl.Size = new Size(79, 31);
+            ScoreLbl.TabIndex = 1;
+            ScoreLbl.Text = "Score:";
             // 
-            // label2
+            // ScoreNLbl
             // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(832, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(38, 31);
-            label2.TabIndex = 2;
-            label2.Text = "00";
+            ScoreNLbl.AutoSize = true;
+            ScoreNLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            ScoreNLbl.Location = new Point(832, 0);
+            ScoreNLbl.Name = "ScoreNLbl";
+            ScoreNLbl.Size = new Size(38, 31);
+            ScoreNLbl.TabIndex = 2;
+            ScoreNLbl.Text = "00";
             // 
-            // label3
+            // EndLbl
             // 
-            label3.AutoSize = true;
-            label3.BackColor = Color.Black;
-            label3.ForeColor = Color.Yellow;
-            label3.Location = new Point(342, 210);
-            label3.Name = "label3";
-            label3.Size = new Size(65, 20);
-            label3.TabIndex = 3;
-            label3.Text = "End Text";
+            EndLbl.AutoSize = true;
+            EndLbl.BackColor = Color.Black;
+            EndLbl.ForeColor = Color.Yellow;
+            EndLbl.Location = new Point(342, 210);
+            EndLbl.Name = "EndLbl";
+            EndLbl.Size = new Size(65, 20);
+            EndLbl.TabIndex = 3;
+            EndLbl.Text = "End Text";
+            EndLbl.Visible = false;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(882, 459);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(EndLbl);
+            Controls.Add(ScoreNLbl);
+            Controls.Add(ScoreLbl);
             Controls.Add(Canvas);
             Name = "Form1";
             Text = "Snake";
@@ -99,9 +105,9 @@
         #endregion
 
         private PictureBox Canvas;
-        private Label label1;
-        private Label label2;
-        private Label label3;
-        private System.Windows.Forms.Timer gameTimer;
+        private Label ScoreLbl;
+        private Label ScoreNLbl;
+        private Label EndLbl;
+        internal System.Windows.Forms.Timer gameTimer;
     }
 }

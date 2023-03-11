@@ -8,7 +8,7 @@ namespace SnakeGame
 {
     internal class Circle
     {
-        public int x { get; set; };
+        public int x { get; set; }
         public int y { get; set; }
 
         public Circle()
