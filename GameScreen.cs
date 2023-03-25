@@ -1,17 +1,28 @@
+/*
+
+NOTES
+
+There is a bug where the Sup and Sdown powerups spawn even when their affects are still present.
+There is a bug where the Sup and Sdown powerups spawn even when another one is on the screen.
+
+*/
 using System.Diagnostics.Eventing.Reader;
 using System.Collections;
 using System.ServiceProcess;
+using System.DirectoryServices;
 
 namespace SnakeGame
 {
-    public partial class Form1 : Form
+    public partial class GameScreen : Form
     {
 
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
         private Enemy enemy = new Enemy();
+        private SpeedUp Sup = new SpeedUp();
+        private SpeedDown Sdown = new SpeedDown();
 
-        public Form1()
+        public GameScreen()
         {
             InitializeComponent();
 
@@ -97,6 +108,40 @@ namespace SnakeGame
                     enemy.x * Settings.width,
                     enemy.y * Settings.height,
                     Settings.width, Settings.height));
+
+                    if (Sup.flash == false)
+                    {
+                        screen.FillEllipse(Brushes.DeepPink, new Rectangle(
+                        Sup.x * Settings.width,
+                        Sup.y * Settings.height,
+                        Settings.width, Settings.height));
+                        Sup.flash = true;
+                    }
+                    else
+                    {
+                        screen.FillEllipse(Brushes.LightPink, new Rectangle(
+                        Sup.x * Settings.width,
+                        Sup.y * Settings.height,
+                        Settings.width, Settings.height));
+                        Sup.flash = false;
+                    }
+
+                    if (Sdown.flash == false)
+                    {
+                        screen.FillEllipse(Brushes.Blue, new Rectangle(
+                        Sdown.x * Settings.width,
+                        Sdown.y * Settings.height,
+                        Settings.width, Settings.height));
+                        Sdown.flash = true;
+                    }
+                    else
+                    {
+                        screen.FillEllipse(Brushes.LightBlue, new Rectangle(
+                        Sdown.x * Settings.width,
+                        Sdown.y * Settings.height,
+                        Settings.width, Settings.height));
+                        Sdown.flash = false;
+                    }
             }
             else
             {
@@ -173,6 +218,28 @@ namespace SnakeGame
                 {
                     die();
                 }
+
+                if (Sup.spawned = true && Snake[i].x == Sup.x && Snake[i].y == Sup.y)
+                {
+                    gameTimer.Interval = 500 / Settings.speed;
+                    changeSpeed();
+                    Canvas.BackColor = Color.LightPink;
+                    Sup.x = -1 * Settings.width;
+                    Sup.y = -1 * Settings.height;
+                    Settings.score += Settings.points * 5;
+                    ScoreNLbl.Text = Settings.score.ToString();
+                }
+
+                if (Sdown.spawned = true && Snake[i].x == Sdown.x && Snake[i].y == Sdown.y)
+                {
+                    gameTimer.Interval = 1500 / Settings.speed;
+                    changeSpeed();
+                    Canvas.BackColor = Color.LightBlue;
+                    Settings.score += Settings.points * 5;
+                    ScoreNLbl.Text = Settings.score.ToString();
+                    Sdown.x = -1 * Settings.width;
+                    Sdown.y = -1 * Settings.height;
+                }
             }
         }
 
@@ -182,6 +249,39 @@ namespace SnakeGame
             int maxY = Canvas.Size.Height / Settings.height;
             Random random = new Random();
             food = new Circle { x = random.Next(0, maxX), y = random.Next(0, maxY) };
+            Random prandom = new Random();
+            Random prandom2 = new Random();
+            if (Sup.spawned == false && Sdown.spawned == false) {
+                switch (prandom.Next(1, 10))
+                {
+                    case 1:
+                        Sup.x = prandom2.Next(0, maxX);
+                        Sup.y = prandom2.Next(0, maxY);
+                        break;
+                    case 2:
+                        Sdown.x = prandom2.Next(0, maxX);
+                        Sdown.y = prandom2.Next(0, maxY);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void changeSpeed()
+        {
+            System.Windows.Forms.Timer speedTime = new System.Windows.Forms.Timer();
+            speedTime.Interval = 1000 * 10;
+            speedTime.Tick += (sender, e) => 
+            { 
+                gameTimer.Interval = 1000 / Settings.speed;
+                speedTime.Stop();
+                speedTime.Dispose();
+                Canvas.BackColor = Color.Gray;
+                Sup.spawned = false;
+                Sdown.spawned = false;
+            };
+            speedTime.Start();
         }
 
         private void eat()
@@ -197,6 +297,7 @@ namespace SnakeGame
         private void die()
         {
             Settings.gameOver = true;
+            gameTimer.Interval = 1000 / Settings.speed;
         }
 
         private void createEnemy()
@@ -222,7 +323,7 @@ namespace SnakeGame
                             break;
                         case (Directions.Right):
                             enemy.Direction = Directions.Left;
-                            break;
+                            break;  
                         case (Directions.Down):
                             enemy.Direction = Directions.Up;
                             break;

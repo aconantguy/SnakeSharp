@@ -6,8 +6,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SnakeGame
-{
+namespace SnakeGame {
+
     internal class Circle
     {
         public int x { get; set; }
@@ -17,9 +17,36 @@ namespace SnakeGame
         {
             x = 0;
             y = 0;
+
+        }
+    }
+    internal class SpeedUp : Circle
+    {
+        public bool spawned { get; set; }
+        public bool flash { get; set; }
+
+        public SpeedUp()
+        {
+            x = -1;
+            y = -1;
+            spawned = false;
+            flash = false;
         }
     }
 
+    internal class SpeedDown : Circle
+    {
+        public bool spawned { get; set; }
+        public bool flash { get; set; }
+
+        public SpeedDown()
+        {
+            x = -1;
+            y = -1;
+            spawned = false;
+            flash = false;
+        }
+    }
     internal class Enemy : Circle
     {
         public int speed { get; set; }
@@ -36,7 +63,7 @@ namespace SnakeGame
             rcounter = 0;
             scounter = 0;
             Random random = new Random();
-            switch(random.Next(1, 4))
+            switch (random.Next(1, 4))
             {
                 case 1:
                     Direction = Directions.Left;
