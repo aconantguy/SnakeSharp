@@ -2,14 +2,13 @@
 
 NOTES
 
-There is a bug where the Sup and Sdown powerups spawn even when their affects are still present.
-There is a bug where the Sup and Sdown powerups spawn even when another one is on the screen.
 
 */
 using System.Diagnostics.Eventing.Reader;
 using System.Collections;
 using System.ServiceProcess;
 using System.DirectoryServices;
+using System.Drawing.Text;
 
 namespace SnakeGame
 {
@@ -27,10 +26,11 @@ namespace SnakeGame
             InitializeComponent();
 
             new Settings();
-
             gameTimer.Interval = 1000 / Settings.speed;
             gameTimer.Enabled = true;
             gameTimer.Start();
+            Sup = new SpeedUp();
+            Sdown = new SpeedDown();
 
             startGame();
         }
@@ -104,12 +104,20 @@ namespace SnakeGame
                     food.y * Settings.height,
                     Settings.width, Settings.height));
 
+                if (enemy.collision == true)
                 screen.FillRectangle(Brushes.Red, new Rectangle(
                     enemy.x * Settings.width,
                     enemy.y * Settings.height,
                     Settings.width, Settings.height));
 
-                    if (Sup.flash == false)
+                else
+                screen.FillRectangle(Brushes.DarkRed, new Rectangle(
+                    enemy.x * Settings.width,
+                    enemy.y * Settings.height,
+                    Settings.width, Settings.height));
+
+
+                if (Sup.flash == false)
                     {
                         screen.FillEllipse(Brushes.DeepPink, new Rectangle(
                         Sup.x * Settings.width,
@@ -214,12 +222,12 @@ namespace SnakeGame
                     Snake[i].y = Snake[i - 1].y;
                 }
 
-                if (Snake[i].x == enemy.x && Snake[i].y == enemy.y)
+                if (enemy.collision == true && Snake[i].x == enemy.x && Snake[i].y == enemy.y)
                 {
                     die();
                 }
 
-                if (Sup.spawned = true && Snake[i].x == Sup.x && Snake[i].y == Sup.y)
+                if (Sup.spawned == true && Snake[i].x == Sup.x && Snake[i].y == Sup.y)
                 {
                     gameTimer.Interval = 500 / Settings.speed;
                     changeSpeed();
@@ -230,7 +238,7 @@ namespace SnakeGame
                     ScoreNLbl.Text = Settings.score.ToString();
                 }
 
-                if (Sdown.spawned = true && Snake[i].x == Sdown.x && Snake[i].y == Sdown.y)
+                if (Sdown.spawned == true && Snake[i].x == Sdown.x && Snake[i].y == Sdown.y)
                 {
                     gameTimer.Interval = 1500 / Settings.speed;
                     changeSpeed();
@@ -251,16 +259,18 @@ namespace SnakeGame
             food = new Circle { x = random.Next(0, maxX), y = random.Next(0, maxY) };
             Random prandom = new Random();
             Random prandom2 = new Random();
-            if (Sup.spawned == false && Sdown.spawned == false) {
+            if (this.Sup.spawned == false && this.Sdown.spawned == false) {
                 switch (prandom.Next(1, 10))
                 {
                     case 1:
                         Sup.x = prandom2.Next(0, maxX);
                         Sup.y = prandom2.Next(0, maxY);
+                        Sup.spawned = true;
                         break;
                     case 2:
                         Sdown.x = prandom2.Next(0, maxX);
                         Sdown.y = prandom2.Next(0, maxY);
+                        Sdown.spawned = true;
                         break;
                     default:
                         break;
@@ -278,8 +288,8 @@ namespace SnakeGame
                 speedTime.Stop();
                 speedTime.Dispose();
                 Canvas.BackColor = Color.Gray;
-                Sup.spawned = false;
-                Sdown.spawned = false;
+                this.Sup.spawned = false;
+                this.Sdown.spawned = false;
             };
             speedTime.Start();
         }
@@ -292,6 +302,7 @@ namespace SnakeGame
             Settings.score += Settings.points;
             ScoreNLbl.Text = Settings.score.ToString();
             generate();
+            createEnemy();
         }
 
         private void die()
@@ -306,6 +317,21 @@ namespace SnakeGame
             int maxY = Canvas.Size.Height / Settings.height;
             Random random = new Random();
             enemy = new Enemy { x = random.Next(0, maxX), y = random.Next(0, maxY), speed = random.Next(0, 5), range = random.Next(0, 10) };
+
+            // Add spawn period where the collision is disabled
+            enemy.collisionTimer.Interval = 5000 / Settings.speed;
+            enemy.collisionTimer.Start();
+            while(enemy.collision == false)
+            {
+                for (int i = 0; i < Snake.Count; i++)
+                {
+                    if (enemy.x == Snake[i].x && enemy.y == Snake[i].y)
+                    {
+                        enemy.collisionTimer.Stop();
+                        enemy.collisionTimer.Start();
+                    }
+                }
+            }
         }
 
         private void moveEnemy()

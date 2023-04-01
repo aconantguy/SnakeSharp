@@ -55,6 +55,9 @@ namespace SnakeGame {
         public int rcounter { get; set; }
         public int scounter { get; set; }
         public Directions Direction { get; set; }
+        public bool collision { get; set; }
+
+        public System.Windows.Forms.Timer collisionTimer = new System.Windows.Forms.Timer();
 
         public Enemy()
         {
@@ -62,6 +65,21 @@ namespace SnakeGame {
             y = 0;
             rcounter = 0;
             scounter = 0;
+            collision = false;
+            try
+            {
+                collisionTimer.Interval = 5000 / Settings.speed;
+            }
+            catch
+            {
+                collisionTimer.Interval = 1000;
+            }
+            collisionTimer.Tick += (sender, e) =>
+            {
+                collision = true;
+                collisionTimer.Stop();
+            };
+
             Random random = new Random();
             switch (random.Next(1, 4))
             {
