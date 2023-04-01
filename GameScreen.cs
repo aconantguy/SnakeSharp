@@ -1,15 +1,8 @@
-/*
-
-NOTES
-
-
-*/
 using System.Diagnostics.Eventing.Reader;
 using System.Collections;
 using System.ServiceProcess;
 using System.DirectoryServices;
 using System.Drawing.Text;
-using SnakeGame.Properties;
 using System.Resources;
 
 namespace SnakeGame
@@ -375,15 +368,15 @@ namespace SnakeGame
             Settings.gameOver = true;
             using (ResXResourceWriter resx = new ResXResourceWriter(@".\Resource.resx"))
             {
-                if (Convert.ToInt16(Resources.HighScore) < Settings.score)
+                if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
                     resx.AddResource("HighScore", Convert.ToString(Settings.score));
                 resx.Close();
             }
-            using (ResXResourceReader resx = new ResXResourceReader(@".\Resource.resx"))
+            using (ResXResourceReader resxr = new ResXResourceReader(@".\Resource.resx"))
             {
-                IDictionaryEnumerator d = resx.GetEnumerator();
+                IDictionaryEnumerator d = resxr.GetEnumerator();
                 while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                resx.Close();
+                resxr.Close();
             }
 
         }
