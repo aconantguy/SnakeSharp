@@ -319,9 +319,7 @@ namespace SnakeGame
             enemy = new Enemy { x = random.Next(0, maxX), y = random.Next(0, maxY), speed = random.Next(0, 5), range = random.Next(0, 10) };
 
             // Add spawn period where the collision is disabled
-            enemy.collisionTimer.Interval = 5000 / Settings.speed;
-            enemy.collisionTimer.Start();
-            while(enemy.collision == false)
+            enemy.collisionTimer.Tick += (sender, e) =>
             {
                 for (int i = 0; i < Snake.Count; i++)
                 {
@@ -330,8 +328,14 @@ namespace SnakeGame
                         enemy.collisionTimer.Stop();
                         enemy.collisionTimer.Start();
                     }
+                    else
+                    {
+                        enemy.collision = true;
+                        enemy.collisionTimer.Stop();
+                    }
                 }
-            }
+            };
+            enemy.collisionTimer.Start();
         }
 
         private void moveEnemy()
