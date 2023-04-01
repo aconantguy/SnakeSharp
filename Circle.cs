@@ -47,6 +47,22 @@ namespace SnakeGame {
             flash = false;
         }
     }
+
+    internal class KillEnemy : Circle
+    {
+        public bool spawned { get; set; }
+        public bool flash { get; set; }
+        public bool effect { get; set; }
+
+        public KillEnemy()
+        {
+            x = -1;
+            y = -1;
+            spawned = false;
+            flash = false;
+            effect = false;
+        }
+    }
     internal class Enemy : Circle
     {
         public int speed { get; set; }
@@ -65,7 +81,7 @@ namespace SnakeGame {
             rcounter = 0;
             scounter = 0;
             collision = false;
-            collisionTimer.Interval = 2000;
+            collisionTimer.Interval = 5000;
             Random random = new Random();
             switch (random.Next(1, 4))
             {

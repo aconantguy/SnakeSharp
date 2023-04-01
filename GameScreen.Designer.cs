@@ -34,6 +34,8 @@
             ScoreLbl = new Label();
             ScoreNLbl = new Label();
             EndLbl = new Label();
+            hScore = new Label();
+            hScoreTxt = new Label();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             SuspendLayout();
             // 
@@ -66,7 +68,7 @@
             // 
             ScoreNLbl.AutoSize = true;
             ScoreNLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            ScoreNLbl.Location = new Point(832, 0);
+            ScoreNLbl.Location = new Point(756, 31);
             ScoreNLbl.Name = "ScoreNLbl";
             ScoreNLbl.Size = new Size(38, 31);
             ScoreNLbl.TabIndex = 2;
@@ -84,16 +86,38 @@
             EndLbl.Text = "End Text";
             EndLbl.Visible = false;
             // 
-            // Form1
+            // hScore
+            // 
+            hScore.AutoSize = true;
+            hScore.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            hScore.Location = new Point(756, 76);
+            hScore.Name = "hScore";
+            hScore.Size = new Size(138, 31);
+            hScore.TabIndex = 4;
+            hScore.Text = "High Score:";
+            // 
+            // hScoreTxt
+            // 
+            hScoreTxt.AutoSize = true;
+            hScoreTxt.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            hScoreTxt.Location = new Point(756, 107);
+            hScoreTxt.Name = "hScoreTxt";
+            hScoreTxt.Size = new Size(38, 31);
+            hScoreTxt.TabIndex = 5;
+            hScoreTxt.Text = "00";
+            // 
+            // GameScreen
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(882, 459);
+            ClientSize = new Size(901, 459);
+            Controls.Add(hScoreTxt);
+            Controls.Add(hScore);
             Controls.Add(EndLbl);
             Controls.Add(ScoreNLbl);
             Controls.Add(ScoreLbl);
             Controls.Add(Canvas);
-            Name = "Form1";
+            Name = "GameScreen";
             Text = "Snake";
             KeyDown += keyDown;
             KeyUp += keyUp;
@@ -109,5 +133,7 @@
         private Label ScoreNLbl;
         private Label EndLbl;
         internal System.Windows.Forms.Timer gameTimer;
+        private Label hScore;
+        private Label hScoreTxt;
     }
 }

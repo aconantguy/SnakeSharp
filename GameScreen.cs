@@ -9,6 +9,8 @@ using System.Collections;
 using System.ServiceProcess;
 using System.DirectoryServices;
 using System.Drawing.Text;
+using SnakeGame.Properties;
+using System.Resources;
 
 namespace SnakeGame
 {
@@ -20,17 +22,29 @@ namespace SnakeGame
         private Enemy enemy = new Enemy();
         private SpeedUp Sup = new SpeedUp();
         private SpeedDown Sdown = new SpeedDown();
+        private KillEnemy eKill = new KillEnemy();
 
         public GameScreen()
         {
             InitializeComponent();
 
+            try
+            {
+                using (ResXResourceReader resx = new ResXResourceReader(@".\Resource.resx"))
+                {
+                    IDictionaryEnumerator d = resx.GetEnumerator();
+                    while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
+                    resx.Close();
+                }
+            }
+            catch { hScoreTxt.Text = "1000"; }
             new Settings();
             gameTimer.Interval = 1000 / Settings.speed;
             gameTimer.Enabled = true;
             gameTimer.Start();
             Sup = new SpeedUp();
             Sdown = new SpeedDown();
+            eKill = new KillEnemy();
 
             startGame();
         }
@@ -65,7 +79,7 @@ namespace SnakeGame
                 move();
             }
 
-            moveEnemy();
+            if (eKill.effect == false) moveEnemy();
 
             Canvas.Invalidate();
 
@@ -105,51 +119,68 @@ namespace SnakeGame
                     Settings.width, Settings.height));
 
                 if (enemy.collision == true)
-                screen.FillRectangle(Brushes.Red, new Rectangle(
-                    enemy.x * Settings.width,
-                    enemy.y * Settings.height,
-                    Settings.width, Settings.height));
+                    screen.FillRectangle(Brushes.Red, new Rectangle(
+                        enemy.x * Settings.width,
+                        enemy.y * Settings.height,
+                        Settings.width, Settings.height));
 
                 else
-                screen.FillRectangle(Brushes.DarkRed, new Rectangle(
-                    enemy.x * Settings.width,
-                    enemy.y * Settings.height,
-                    Settings.width, Settings.height));
+                    screen.FillRectangle(Brushes.DarkRed, new Rectangle(
+                        enemy.x * Settings.width,
+                        enemy.y * Settings.height,
+                        Settings.width, Settings.height));
 
 
                 if (Sup.flash == false)
-                    {
-                        screen.FillEllipse(Brushes.DeepPink, new Rectangle(
-                        Sup.x * Settings.width,
-                        Sup.y * Settings.height,
-                        Settings.width, Settings.height));
-                        Sup.flash = true;
-                    }
-                    else
-                    {
-                        screen.FillEllipse(Brushes.LightPink, new Rectangle(
-                        Sup.x * Settings.width,
-                        Sup.y * Settings.height,
-                        Settings.width, Settings.height));
-                        Sup.flash = false;
-                    }
+                {
+                    screen.FillEllipse(Brushes.DeepPink, new Rectangle(
+                    Sup.x * Settings.width,
+                    Sup.y * Settings.height,
+                    Settings.width, Settings.height));
+                    Sup.flash = true;
+                }
+                else
+                {
+                    screen.FillEllipse(Brushes.LightPink, new Rectangle(
+                    Sup.x * Settings.width,
+                    Sup.y * Settings.height,
+                    Settings.width, Settings.height));
+                    Sup.flash = false;
+                }
 
-                    if (Sdown.flash == false)
-                    {
-                        screen.FillEllipse(Brushes.Blue, new Rectangle(
-                        Sdown.x * Settings.width,
-                        Sdown.y * Settings.height,
-                        Settings.width, Settings.height));
-                        Sdown.flash = true;
-                    }
-                    else
-                    {
-                        screen.FillEllipse(Brushes.LightBlue, new Rectangle(
-                        Sdown.x * Settings.width,
-                        Sdown.y * Settings.height,
-                        Settings.width, Settings.height));
-                        Sdown.flash = false;
-                    }
+                if (Sdown.flash == false)
+                {
+                    screen.FillEllipse(Brushes.Blue, new Rectangle(
+                    Sdown.x * Settings.width,
+                    Sdown.y * Settings.height,
+                    Settings.width, Settings.height));
+                    Sdown.flash = true;
+                }
+                else
+                {
+                    screen.FillEllipse(Brushes.LightBlue, new Rectangle(
+                    Sdown.x * Settings.width,
+                    Sdown.y * Settings.height,
+                    Settings.width, Settings.height));
+                    Sdown.flash = false;
+                }
+
+                if (eKill.flash == false)
+                {
+                    screen.FillEllipse(Brushes.Yellow, new Rectangle(
+                    eKill.x * Settings.width,
+                    eKill.y * Settings.height,
+                    Settings.width, Settings.height));
+                    eKill.flash = true;
+                }
+                else
+                {
+                    screen.FillEllipse(Brushes.LightYellow, new Rectangle(
+                    eKill.x * Settings.width,
+                    eKill.y * Settings.height,
+                    Settings.width, Settings.height));
+                    eKill.flash = false;
+                }
             }
             else
             {
@@ -165,7 +196,7 @@ namespace SnakeGame
             Snake.Clear();
             Circle head = new Circle { x = 10, y = 5 };
             Snake.Add(head);
-            createEnemy();
+            if (eKill.effect == false) createEnemy();
 
             ScoreNLbl.Text = Settings.score.ToString();
 
@@ -230,7 +261,7 @@ namespace SnakeGame
                 if (Sup.spawned == true && Snake[i].x == Sup.x && Snake[i].y == Sup.y)
                 {
                     gameTimer.Interval = 500 / Settings.speed;
-                    changeSpeed();
+                    revert();
                     Canvas.BackColor = Color.LightPink;
                     Sup.x = -1 * Settings.width;
                     Sup.y = -1 * Settings.height;
@@ -241,12 +272,27 @@ namespace SnakeGame
                 if (Sdown.spawned == true && Snake[i].x == Sdown.x && Snake[i].y == Sdown.y)
                 {
                     gameTimer.Interval = 1500 / Settings.speed;
-                    changeSpeed();
+                    revert();
                     Canvas.BackColor = Color.LightBlue;
                     Settings.score += Settings.points * 5;
                     ScoreNLbl.Text = Settings.score.ToString();
                     Sdown.x = -1 * Settings.width;
                     Sdown.y = -1 * Settings.height;
+                }
+
+                if (eKill.spawned == true && Snake[i].x == eKill.x && Snake[i].y == eKill.y)
+                {
+                    revert();
+                    Canvas.BackColor = Color.Yellow;
+                    Settings.score += Settings.points * 5;
+                    ScoreNLbl.Text = Settings.score.ToString();
+                    eKill.x = -1 * Settings.width;
+                    eKill.y = -1 * Settings.height;
+                    enemy.x = -2 * Settings.width;
+                    enemy.y = -2 * Settings.height;
+                    enemy.range = 1;
+                    enemy.speed = 1;
+                    eKill.effect = true;
                 }
             }
         }
@@ -259,7 +305,8 @@ namespace SnakeGame
             food = new Circle { x = random.Next(0, maxX), y = random.Next(0, maxY) };
             Random prandom = new Random();
             Random prandom2 = new Random();
-            if (this.Sup.spawned == false && this.Sdown.spawned == false) {
+            if (Sup.spawned == false && Sdown.spawned == false && eKill.spawned == false)
+            {
                 switch (prandom.Next(1, 10))
                 {
                     case 1:
@@ -272,26 +319,43 @@ namespace SnakeGame
                         Sdown.y = prandom2.Next(0, maxY);
                         Sdown.spawned = true;
                         break;
+                    case 3:
+                        eKill.x = prandom2.Next(0, maxX);
+                        eKill.y = prandom2.Next(0, maxY);
+                        eKill.spawned = true;
+                        break;
                     default:
                         break;
                 }
             }
         }
 
-        private void changeSpeed()
+        private void revert()
         {
             System.Windows.Forms.Timer speedTime = new System.Windows.Forms.Timer();
             speedTime.Interval = 1000 * 10;
-            speedTime.Tick += (sender, e) => 
-            { 
+            speedTime.Tick += (sender, e) =>
+            {
                 gameTimer.Interval = 1000 / Settings.speed;
                 speedTime.Stop();
                 speedTime.Dispose();
                 Canvas.BackColor = Color.Gray;
                 this.Sup.spawned = false;
                 this.Sdown.spawned = false;
+                this.eKill.spawned = false;
+                this.eKill.effect = false;
             };
             speedTime.Start();
+        }
+
+        private void reset()
+        {
+            gameTimer.Interval = 1000 / Settings.speed;
+            Canvas.BackColor = Color.Gray;
+            this.Sup.spawned = false;
+            this.Sdown.spawned = false;
+            this.eKill.spawned = false;
+            this.eKill.effect = false;
         }
 
         private void eat()
@@ -302,13 +366,26 @@ namespace SnakeGame
             Settings.score += Settings.points;
             ScoreNLbl.Text = Settings.score.ToString();
             generate();
-            createEnemy();
+            if (eKill.effect == false) createEnemy();
         }
 
         private void die()
         {
+            reset();
             Settings.gameOver = true;
-            gameTimer.Interval = 1000 / Settings.speed;
+            using (ResXResourceWriter resx = new ResXResourceWriter(@".\Resource.resx"))
+            {
+                if (Convert.ToInt16(Resources.HighScore) < Settings.score)
+                    resx.AddResource("HighScore", Convert.ToString(Settings.score));
+                resx.Close();
+            }
+            using (ResXResourceReader resx = new ResXResourceReader(@".\Resource.resx"))
+            {
+                IDictionaryEnumerator d = resx.GetEnumerator();
+                while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
+                resx.Close();
+            }
+
         }
 
         private void createEnemy()
@@ -353,7 +430,7 @@ namespace SnakeGame
                             break;
                         case (Directions.Right):
                             enemy.Direction = Directions.Left;
-                            break;  
+                            break;
                         case (Directions.Down):
                             enemy.Direction = Directions.Up;
                             break;
