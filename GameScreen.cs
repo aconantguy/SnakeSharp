@@ -298,7 +298,11 @@ namespace SnakeGame
             food = new Circle { x = random.Next(0, maxX), y = random.Next(0, maxY) };
             Random prandom = new Random();
             Random prandom2 = new Random();
-            if (Sup.spawned == false && Sdown.spawned == false && eKill.spawned == false)
+
+            if (Sup.x > 0 && Sup.y > 0) Sup.spawned = true;
+            else if (Sdown.x > 0 && Sdown.y > 0) Sdown.spawned = true;
+            else if (eKill.x > 0 && eKill.y > 0) eKill.spawned = true;
+            else if (Sup.spawned == false && Sdown.spawned == false && eKill.spawned == false)
             {
                 switch (prandom.Next(1, 10))
                 {
