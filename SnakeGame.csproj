@@ -8,4 +8,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Update="MasterGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ExpertGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="NormalGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿namespace SnakeGame
 {
-    partial class GameScreen
+    partial class MasterGame
     {
         /// <summary>
         ///  Required designer variable.
@@ -36,6 +36,12 @@
             EndLbl = new Label();
             hScore = new Label();
             hScoreTxt = new Label();
+            LblMenu = new Label();
+            LblRestart = new Label();
+            LevelLbl = new Label();
+            LevelNLbl = new Label();
+            NextLbl = new Label();
+            NextNLbl = new Label();
             ((System.ComponentModel.ISupportInitialize)Canvas).BeginInit();
             SuspendLayout();
             // 
@@ -58,7 +64,7 @@
             // 
             ScoreLbl.AutoSize = true;
             ScoreLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            ScoreLbl.Location = new Point(756, 0);
+            ScoreLbl.Location = new Point(756, 147);
             ScoreLbl.Name = "ScoreLbl";
             ScoreLbl.Size = new Size(79, 31);
             ScoreLbl.TabIndex = 1;
@@ -68,7 +74,7 @@
             // 
             ScoreNLbl.AutoSize = true;
             ScoreNLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            ScoreNLbl.Location = new Point(756, 31);
+            ScoreNLbl.Location = new Point(756, 178);
             ScoreNLbl.Name = "ScoreNLbl";
             ScoreNLbl.Size = new Size(38, 31);
             ScoreNLbl.TabIndex = 2;
@@ -78,19 +84,21 @@
             // 
             EndLbl.AutoSize = true;
             EndLbl.BackColor = Color.Black;
-            EndLbl.ForeColor = Color.Yellow;
-            EndLbl.Location = new Point(342, 210);
+            EndLbl.Font = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            EndLbl.ForeColor = Color.White;
+            EndLbl.Location = new Point(298, 178);
             EndLbl.Name = "EndLbl";
-            EndLbl.Size = new Size(65, 20);
+            EndLbl.Size = new Size(120, 38);
             EndLbl.TabIndex = 3;
             EndLbl.Text = "End Text";
+            EndLbl.TextAlign = ContentAlignment.MiddleCenter;
             EndLbl.Visible = false;
             // 
             // hScore
             // 
             hScore.AutoSize = true;
             hScore.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            hScore.Location = new Point(756, 76);
+            hScore.Location = new Point(756, 223);
             hScore.Name = "hScore";
             hScore.Size = new Size(138, 31);
             hScore.TabIndex = 4;
@@ -100,24 +108,97 @@
             // 
             hScoreTxt.AutoSize = true;
             hScoreTxt.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            hScoreTxt.Location = new Point(756, 107);
+            hScoreTxt.Location = new Point(756, 254);
             hScoreTxt.Name = "hScoreTxt";
             hScoreTxt.Size = new Size(38, 31);
             hScoreTxt.TabIndex = 5;
             hScoreTxt.Text = "00";
             // 
-            // GameScreen
+            // LblMenu
+            // 
+            LblMenu.BackColor = Color.FromArgb(255, 128, 128);
+            LblMenu.BorderStyle = BorderStyle.FixedSingle;
+            LblMenu.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            LblMenu.Location = new Point(756, 401);
+            LblMenu.Name = "LblMenu";
+            LblMenu.Size = new Size(138, 47);
+            LblMenu.TabIndex = 6;
+            LblMenu.Text = "Menu";
+            LblMenu.TextAlign = ContentAlignment.MiddleCenter;
+            LblMenu.Click += LblMenu_Click;
+            // 
+            // LblRestart
+            // 
+            LblRestart.BackColor = Color.FromArgb(128, 255, 128);
+            LblRestart.BorderStyle = BorderStyle.FixedSingle;
+            LblRestart.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            LblRestart.Location = new Point(756, 342);
+            LblRestart.Name = "LblRestart";
+            LblRestart.Size = new Size(138, 47);
+            LblRestart.TabIndex = 7;
+            LblRestart.Text = "Restart";
+            LblRestart.TextAlign = ContentAlignment.MiddleCenter;
+            LblRestart.Click += LblRestart_Click;
+            // 
+            // LevelLbl
+            // 
+            LevelLbl.AutoSize = true;
+            LevelLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            LevelLbl.Location = new Point(756, 9);
+            LevelLbl.Name = "LevelLbl";
+            LevelLbl.Size = new Size(75, 31);
+            LevelLbl.TabIndex = 8;
+            LevelLbl.Text = "Level:";
+            // 
+            // LevelNLbl
+            // 
+            LevelNLbl.AutoSize = true;
+            LevelNLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            LevelNLbl.Location = new Point(756, 40);
+            LevelNLbl.Name = "LevelNLbl";
+            LevelNLbl.Size = new Size(26, 31);
+            LevelNLbl.TabIndex = 9;
+            LevelNLbl.Text = "1";
+            // 
+            // NextLbl
+            // 
+            NextLbl.AutoSize = true;
+            NextLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            NextLbl.Location = new Point(756, 77);
+            NextLbl.Name = "NextLbl";
+            NextLbl.Size = new Size(133, 31);
+            NextLbl.TabIndex = 10;
+            NextLbl.Text = "Next Level:";
+            // 
+            // NextNLbl
+            // 
+            NextNLbl.AutoSize = true;
+            NextNLbl.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
+            NextNLbl.Location = new Point(756, 108);
+            NextNLbl.Name = "NextNLbl";
+            NextNLbl.Size = new Size(38, 31);
+            NextNLbl.TabIndex = 11;
+            NextNLbl.Text = "00";
+            // 
+            // NormalGame
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(901, 459);
+            ControlBox = false;
+            Controls.Add(NextNLbl);
+            Controls.Add(NextLbl);
+            Controls.Add(LevelNLbl);
+            Controls.Add(LevelLbl);
+            Controls.Add(LblRestart);
+            Controls.Add(LblMenu);
             Controls.Add(hScoreTxt);
             Controls.Add(hScore);
             Controls.Add(EndLbl);
             Controls.Add(ScoreNLbl);
             Controls.Add(ScoreLbl);
             Controls.Add(Canvas);
-            Name = "GameScreen";
+            Name = "NormalGame";
             Text = "Snake";
             KeyDown += keyDown;
             KeyUp += keyUp;
@@ -135,5 +216,11 @@
         internal System.Windows.Forms.Timer gameTimer;
         private Label hScore;
         private Label hScoreTxt;
+        private Label LblMenu;
+        private Label LblRestart;
+        private Label LevelLbl;
+        private Label LevelNLbl;
+        private Label NextLbl;
+        private Label NextNLbl;
     }
 }

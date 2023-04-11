@@ -17,13 +17,13 @@ namespace SnakeGame {
         {
             x = 0;
             y = 0;
-
         }
     }
     internal class SpeedUp : Circle
     {
         public bool spawned { get; set; }
         public bool flash { get; set; }
+
 
         public SpeedUp()
         {
@@ -38,6 +38,7 @@ namespace SnakeGame {
     {
         public bool spawned { get; set; }
         public bool flash { get; set; }
+
 
         public SpeedDown()
         {
@@ -81,6 +82,8 @@ namespace SnakeGame {
             rcounter = 0;
             scounter = 0;
             collision = false;
+            collisionTimer.Dispose();
+            collisionTimer = new System.Windows.Forms.Timer();
             collisionTimer.Interval = 5000;
             Random random = new Random();
             switch (random.Next(1, 4))

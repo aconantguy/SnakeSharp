@@ -4,10 +4,11 @@ using System.ServiceProcess;
 using System.DirectoryServices;
 using System.Drawing.Text;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
-    public partial class GameScreen : Form
+    public partial class NormalGame : Form
     {
 
         private List<Circle> Snake = new List<Circle>();
@@ -17,13 +18,13 @@ namespace SnakeGame
         private SpeedDown Sdown = new SpeedDown();
         private KillEnemy eKill = new KillEnemy();
 
-        public GameScreen()
+        public NormalGame()
         {
             InitializeComponent();
 
             try
             {
-                using (ResXResourceReader resx = new ResXResourceReader(@".\Resource.resx"))
+                using (ResourceReader resx = new ResourceReader(@".\ns.res"))
                 {
                     IDictionaryEnumerator d = resx.GetEnumerator();
                     while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
@@ -32,27 +33,22 @@ namespace SnakeGame
             }
             catch { hScoreTxt.Text = "1000"; }
             new Settings();
-            gameTimer.Interval = 1000 / Settings.speed;
+            Settings.level = 1;
+            Settings.speed = 200;
+            gameTimer.Interval = Settings.speed;
             gameTimer.Enabled = true;
             gameTimer.Start();
             Sup = new SpeedUp();
             Sdown = new SpeedDown();
             eKill = new KillEnemy();
+            reset();
 
             startGame();
         }
 
         private void updateScreen(object sender, EventArgs e)
         {
-            if (Settings.gameOver == true)
-            {
-                if (Input.KeyPress(Keys.Enter))
-                {
-                    startGame();
-                }
-            }
-            else
-            {
+            if (Settings.gameOver == false) {
                 if (Input.KeyPress(Keys.Right) && Settings.direction != Directions.Left)
                 {
                     Settings.direction = Directions.Right;
@@ -93,18 +89,38 @@ namespace SnakeGame
             Graphics screen = e.Graphics;
             if (Settings.gameOver == false)
             {
+
                 Brush color;
 
-                for (int i = 0; i < Snake.Count; i++)
+                if (Settings.lFlash > 0 && Settings.lFlash % 2 == 0)
                 {
-                    if (i == 0) color = Brushes.Green;
-                    else color = Brushes.DarkGreen;
-
-                    screen.FillRectangle(color, new Rectangle(
-                        Snake[i].x * Settings.width,
-                        Snake[i].y * Settings.height,
-                        Settings.width, Settings.height));
+                    for (int i = 0; i < Snake.Count; i++)
+                    {
+                        color = Brushes.White;
+                        screen.FillRectangle(color, new Rectangle(
+                            Snake[i].x * Settings.width,
+                            Snake[i].y * Settings.height,
+                            Settings.width, Settings.height));
+                    }
+                    Settings.lFlash--;
                 }
+                else
+                {
+                    for (int i = 0; i < Snake.Count; i++)
+                    {
+
+                        if (i == 0) color = Brushes.Green;
+                        else color = Brushes.DarkGreen;
+
+
+                        screen.FillRectangle(color, new Rectangle(
+                            Snake[i].x * Settings.width,
+                            Snake[i].y * Settings.height,
+                            Settings.width, Settings.height));
+                    }
+                    if (Settings.lFlash > 0 && Settings.lFlash % 2 != 0) Settings.lFlash--;
+                }
+
 
                 screen.FillEllipse(Brushes.White, new Rectangle(
                     food.x * Settings.width,
@@ -177,22 +193,23 @@ namespace SnakeGame
             }
             else
             {
-                EndLbl.Text = "Game Over\nFinal Score: " + Settings.score + "\nPress Enter to Restart\n";
+                EndLbl.Text = "Game Over!";
                 EndLbl.Visible = true;
             }
         }
 
         private void startGame()
         {
+            Settings.gameOver = false;
+            reset();
             EndLbl.Visible = false;
-            new Settings();
             Snake.Clear();
             Circle head = new Circle { x = 10, y = 5 };
             Snake.Add(head);
             if (eKill.effect == false) createEnemy();
-
+            NextNLbl.Text = Settings.next.ToString();
+            LevelNLbl.Text = Settings.level.ToString();
             ScoreNLbl.Text = Settings.score.ToString();
-
             generate();
         }
 
@@ -253,7 +270,7 @@ namespace SnakeGame
 
                 if (Sup.spawned == true && Snake[i].x == Sup.x && Snake[i].y == Sup.y)
                 {
-                    gameTimer.Interval = 500 / Settings.speed;
+                    gameTimer.Interval = (Settings.speed * 2) / 3;
                     revert();
                     Canvas.BackColor = Color.LightPink;
                     Sup.x = -1 * Settings.width;
@@ -264,7 +281,7 @@ namespace SnakeGame
 
                 if (Sdown.spawned == true && Snake[i].x == Sdown.x && Snake[i].y == Sdown.y)
                 {
-                    gameTimer.Interval = 1500 / Settings.speed;
+                    gameTimer.Interval = (Settings.speed * 3) / 2;
                     revert();
                     Canvas.BackColor = Color.LightBlue;
                     Settings.score += Settings.points * 5;
@@ -333,7 +350,7 @@ namespace SnakeGame
             speedTime.Interval = 1000 * 10;
             speedTime.Tick += (sender, e) =>
             {
-                gameTimer.Interval = 1000 / Settings.speed;
+                gameTimer.Interval = Settings.speed;
                 speedTime.Stop();
                 speedTime.Dispose();
                 Canvas.BackColor = Color.Gray;
@@ -347,11 +364,23 @@ namespace SnakeGame
 
         private void reset()
         {
-            gameTimer.Interval = 1000 / Settings.speed;
+            Settings.level = 1;
+            Settings.next = (Settings.level * 3) / 2;
+            Settings.speed = 200;
+            gameTimer.Interval = Settings.speed;
             Canvas.BackColor = Color.Gray;
+            Settings.lFlash = 0;
             this.Sup.spawned = false;
+            this.Sup.x = -1 * Settings.width;
+            this.Sup.y = -1 * Settings.height;
+
             this.Sdown.spawned = false;
+            this.Sdown.x = -1 * Settings.width;
+            this.Sdown.y = -1 * Settings.height;
+
             this.eKill.spawned = false;
+            this.eKill.x = -1 * Settings.width;
+            this.eKill.y = -1 * Settings.height;
             this.eKill.effect = false;
         }
 
@@ -364,19 +393,23 @@ namespace SnakeGame
             ScoreNLbl.Text = Settings.score.ToString();
             generate();
             if (eKill.effect == false) createEnemy();
+
+            Settings.next--;
+            if (Settings.next == 0) levelUp();
+            else NextNLbl.Text = Settings.next.ToString();
         }
 
         private void die()
         {
             reset();
             Settings.gameOver = true;
-            using (ResXResourceWriter resx = new ResXResourceWriter(@".\Resource.resx"))
+            using (ResourceWriter resx = new ResourceWriter(@".\ns.res"))
             {
                 if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
                     resx.AddResource("HighScore", Convert.ToString(Settings.score));
                 resx.Close();
             }
-            using (ResXResourceReader resxr = new ResXResourceReader(@".\Resource.resx"))
+            using (ResourceReader resxr = new ResourceReader(@".\ns.res"))
             {
                 IDictionaryEnumerator d = resxr.GetEnumerator();
                 while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
@@ -390,10 +423,10 @@ namespace SnakeGame
             int maxX = Canvas.Size.Width / Settings.width;
             int maxY = Canvas.Size.Height / Settings.height;
             Random random = new Random();
-            enemy = new Enemy { x = random.Next(0, maxX), y = random.Next(0, maxY), speed = random.Next(0, 5), range = random.Next(0, 10) };
-
+            this.enemy = new Enemy { x = random.Next(0, maxX), y = random.Next(0, maxY), speed = random.Next(0, 5), range = random.Next(0, 10) };
+            enemy.collisionTimer.Interval = 5000;
             // Add spawn period where the collision is disabled
-            enemy.collisionTimer.Tick += (sender, e) =>
+            this.enemy.collisionTimer.Tick += (sender, e) =>
             {
                 for (int i = 0; i < Snake.Count; i++)
                 {
@@ -409,7 +442,11 @@ namespace SnakeGame
                     }
                 }
             };
-            enemy.collisionTimer.Start();
+            if (this.enemy.collisionTimer.Enabled == true)
+            {
+                this.enemy.collisionTimer.Stop();
+            }
+            this.enemy.collisionTimer.Start();
         }
 
         private void moveEnemy()
@@ -462,6 +499,53 @@ namespace SnakeGame
                 else if (enemy.y > maxY) enemy.y = 0;
             }
             else enemy.scounter++;
+        }
+
+        private void levelUp()
+        {
+            Settings.lFlash = 4;
+            Settings.level++;
+            Settings.next = (Settings.level * 3) / 2;
+            Settings.speed = (Settings.speed / 10) * 9;
+            LevelNLbl.Text = Settings.level.ToString();
+            NextNLbl.Text = Settings.next.ToString();
+            gameTimer.Interval = Settings.speed;
+            Canvas.BackColor = Color.Gray;
+
+            if (Settings.level == 15)
+            {
+                try
+                {
+                    using (ResourceReader resx = new ResourceReader(@".\mu.res"))
+                    {
+                        IDictionaryEnumerator d = resx.GetEnumerator();
+                        while (d.MoveNext()) //Checks to see if the file exists
+                        resx.Close();
+                    }
+                }
+                catch
+                {
+                    using (ResourceWriter resx = new ResourceWriter(@".\mu.res"))
+                    {
+                        resx.AddResource("Access", "1");
+                        resx.Close();
+                    }
+                }
+            }
+        }
+
+        private void LblMenu_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Form menu = new Menu();
+            menu.Closed += (s, args) => this.Close();
+            menu.Show();
+        }
+
+        private void LblRestart_Click(object sender, EventArgs e)
+        {
+            reset();
+            startGame();
         }
     }
 }

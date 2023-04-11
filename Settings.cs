@@ -21,6 +21,12 @@ namespace SnakeGame
         public static int score { get; set; }
         public static int points { get; set; }
         public static bool gameOver { get; set; }
+        public static int level { get; set; }
+        public static int next { get; set; }
+        public static int lFlash { get; set; }
+
+
+
         public static Directions direction { get; set; }
 
         public Settings()
