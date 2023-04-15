@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
-    // The default mode
+    // The default mode, full breakdown below
     public partial class NormalGame : Form
     {
 
