@@ -8,30 +8,26 @@ using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
+    // The default mode
     public partial class NormalGame : Form
     {
 
+        // Creates all necessary base classes
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
         private Enemy enemy = new Enemy();
         private SpeedUp Sup = new SpeedUp();
         private SpeedDown Sdown = new SpeedDown();
         private KillEnemy eKill = new KillEnemy();
+        private GameData GameData = new GameData();
 
+        // Upon initialization, the high score is loaded and game entities are created. Then the game is started.
         public NormalGame()
         {
             InitializeComponent();
 
-            try
-            {
-                using (ResourceReader resx = new ResourceReader(@".\ns.res"))
-                {
-                    IDictionaryEnumerator d = resx.GetEnumerator();
-                    while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                    resx.Close();
-                }
-            }
-            catch { hScoreTxt.Text = "1000"; }
+            hScoreTxt.Text = GameData.Load(1).ToString();
+
             new Settings();
             Settings.level = 1;
             Settings.speed = 200;
@@ -41,11 +37,13 @@ namespace SnakeGame
             Sup = new SpeedUp();
             Sdown = new SpeedDown();
             eKill = new KillEnemy();
-            reset();
+            reset(); // In the case that this mode is re-entered by the player, this function resets all previously changed values.
 
             startGame();
         }
 
+        // Player commands are taken from the input class and translated into a direciton.
+        // If the KillEnemy powerup is not in effect, then the enemy is moved. Then the screen is redrawn.
         private void updateScreen(object sender, EventArgs e)
         {
             if (Settings.gameOver == false) {
@@ -74,16 +72,19 @@ namespace SnakeGame
 
         }
 
+        // Detects when a player presses a key and sends it to the input class
         private void keyDown(object sender, KeyEventArgs e)
         {
             Input.changeState(e.KeyCode, true);
         }
 
+        // Detects when a player releases a key and sends it to the input class
         private void keyUp(object sender, KeyEventArgs e)
         {
             Input.changeState(e.KeyCode, false);
         }
 
+        // Colors in all elements on the screen and applies flashing effects if applicable
         private void updateGraphics(object sender, PaintEventArgs e)
         {
             Graphics screen = e.Graphics;
@@ -198,10 +199,11 @@ namespace SnakeGame
             }
         }
 
+        // Finishes setting up the game, then creates the snake head and calls the generate function
         private void startGame()
         {
             Settings.gameOver = false;
-            reset();
+            reset(); // I don't know why this function needs to be called again but it fixed some glitches
             EndLbl.Visible = false;
             Snake.Clear();
             Circle head = new Circle { x = 10, y = 5 };
@@ -213,6 +215,7 @@ namespace SnakeGame
             generate();
         }
 
+        // Moves the player around the screen and handles collision with powerups and enemies
         private void move()
         {
             for (int i = Snake.Count - 1; i >= 0; i--)
@@ -307,6 +310,8 @@ namespace SnakeGame
             }
         }
 
+        // Places food in a random place on the screen
+        // Also has a 30% chance of generating a powerup if one does not already exist or is in effect
         private void generate()
         {
             int maxX = Canvas.Size.Width / Settings.width;
@@ -344,6 +349,7 @@ namespace SnakeGame
             }
         }
 
+        // Whenever a powerup is collected, a timer is set that will change the game back to normal
         private void revert()
         {
             System.Windows.Forms.Timer speedTime = new System.Windows.Forms.Timer();
@@ -362,8 +368,10 @@ namespace SnakeGame
             speedTime.Start();
         }
 
+        // Resets all values
         private void reset()
         {
+            Settings.gameOver = false;
             Settings.level = 1;
             Settings.next = (Settings.level * 3) / 2;
             Settings.speed = 200;
@@ -384,6 +392,7 @@ namespace SnakeGame
             this.eKill.effect = false;
         }
 
+        // Grows the snake, generates new food, creates an enemy if applicable, then updates the required food to level up.
         private void eat()
         {
             Circle body = new Circle() { x = Snake[Snake.Count - 1].x, y = Snake[Snake.Count - 1].y };
@@ -399,25 +408,18 @@ namespace SnakeGame
             else NextNLbl.Text = Settings.next.ToString();
         }
 
+        // Calls the reset function, sets the value of GameOver to true, then saves the high score.
         private void die()
         {
             reset();
             Settings.gameOver = true;
-            using (ResourceWriter resx = new ResourceWriter(@".\ns.res"))
-            {
-                if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
-                    resx.AddResource("HighScore", Convert.ToString(Settings.score));
-                resx.Close();
-            }
-            using (ResourceReader resxr = new ResourceReader(@".\ns.res"))
-            {
-                IDictionaryEnumerator d = resxr.GetEnumerator();
-                while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                resxr.Close();
-            }
+            GameData.Save(1, Settings.score);
+            hScoreTxt.Text = GameData.Load(1).ToString();
 
         }
 
+        // Creates an enemy with a random position, speed and range.
+        // Also impliments the spawn period where collision is disabled.
         private void createEnemy()
         {
             int maxX = Canvas.Size.Width / Settings.width;
@@ -425,7 +427,7 @@ namespace SnakeGame
             Random random = new Random();
             this.enemy = new Enemy { x = random.Next(0, maxX), y = random.Next(0, maxY), speed = random.Next(0, 5), range = random.Next(0, 10) };
             enemy.collisionTimer.Interval = 5000;
-            // Add spawn period where the collision is disabled
+    
             this.enemy.collisionTimer.Tick += (sender, e) =>
             {
                 for (int i = 0; i < Snake.Count; i++)
@@ -449,6 +451,7 @@ namespace SnakeGame
             this.enemy.collisionTimer.Start();
         }
 
+        // If the enemy can move that turn, it shifts by one spot.
         private void moveEnemy()
         {
             if (enemy.scounter == enemy.speed)
@@ -501,6 +504,8 @@ namespace SnakeGame
             else enemy.scounter++;
         }
 
+        // Begins player flash animation, sets speed and required food and immediately reverts and powerup effects.
+        // Also checks to see if the player has unlocked the next difficulty
         private void levelUp()
         {
             Settings.lFlash = 4;
@@ -512,36 +517,20 @@ namespace SnakeGame
             gameTimer.Interval = Settings.speed;
             Canvas.BackColor = Color.Gray;
 
-            if (Settings.level == 15)
-            {
-                try
-                {
-                    using (ResourceReader resx = new ResourceReader(@".\mu.res"))
-                    {
-                        IDictionaryEnumerator d = resx.GetEnumerator();
-                        while (d.MoveNext()) //Checks to see if the file exists
-                        resx.Close();
-                    }
-                }
-                catch
-                {
-                    using (ResourceWriter resx = new ResourceWriter(@".\mu.res"))
-                    {
-                        resx.AddResource("Access", "1");
-                        resx.Close();
-                    }
-                }
-            }
+            if (Settings.level == 12) GameData.Save(0, 1);
         }
 
+        // Updates the save file, quits the game and opens the main menu
         private void LblMenu_Click(object sender, EventArgs e)
         {
+            GameData.Write();
             this.Hide();
             Form menu = new Menu();
             menu.Closed += (s, args) => this.Close();
             menu.Show();
         }
-
+        
+        // Immediately restarts the game
         private void LblRestart_Click(object sender, EventArgs e)
         {
             reset();

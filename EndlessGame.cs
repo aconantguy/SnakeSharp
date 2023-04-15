@@ -7,6 +7,9 @@ using System.Resources;
 
 namespace SnakeGame
 {
+
+    // See NormalGame for code breakdown
+    // Endless mode removes the levelup system completely
     public partial class EndlessGame : Form
     {
 
@@ -16,21 +19,14 @@ namespace SnakeGame
         private SpeedUp Sup = new SpeedUp();
         private SpeedDown Sdown = new SpeedDown();
         private KillEnemy eKill = new KillEnemy();
+        private GameData GameData = new GameData();
 
         public EndlessGame()
         {
             InitializeComponent();
 
-            try
-            {
-                using (ResourceReader resx = new ResourceReader(@".\es.res"))
-                {
-                    IDictionaryEnumerator d = resx.GetEnumerator();
-                    while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                    resx.Close();
-                }
-            }
-            catch { hScoreTxt.Text = "1000"; }
+            hScoreTxt.Text = GameData.Load(4).ToString();
+
             new Settings();
             gameTimer.Interval = 1000 / Settings.speed;
             gameTimer.Enabled = true;
@@ -379,18 +375,8 @@ namespace SnakeGame
         {
             reset();
             Settings.gameOver = true;
-            using (ResourceWriter resx = new ResourceWriter(@".\es.res"))
-            {
-                if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
-                    resx.AddResource("HighScore", Convert.ToString(Settings.score));
-                resx.Close();
-            }
-            using (ResourceReader resxr = new ResourceReader(@".\es.res"))
-            {
-                IDictionaryEnumerator d = resxr.GetEnumerator();
-                while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                resxr.Close();
-            }
+            GameData.Save(4, Settings.score);
+            hScoreTxt.Text = GameData.Load(4).ToString();
 
         }
 
@@ -479,6 +465,7 @@ namespace SnakeGame
 
         private void LblMenu_Click(object sender, EventArgs e)
         {
+            GameData.Write();
             this.Hide();
             Form menu = new Menu();
             menu.Closed += (s, args) => this.Close();

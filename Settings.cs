@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SnakeGame
 {
+    // The Directions are used to translate key presses into in-game commands
     public enum Directions
     {
         Left,
@@ -13,6 +14,8 @@ namespace SnakeGame
         Up,
         Down
     };
+
+    // Declares settings, then initializes them to default values
     internal class Settings
     {
         public static int width { get; set; }

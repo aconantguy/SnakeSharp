@@ -8,6 +8,9 @@ using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
+    // See NormalGame for code breakdown
+    // Expert mode is a harder difficulty, with powerups only spawning half as often.
+    // The player starts off 10% faster and each levelup increases the game speed by 40%.
     public partial class ExpertGame : Form
     {
 
@@ -17,21 +20,14 @@ namespace SnakeGame
         private SpeedUp Sup = new SpeedUp();
         private SpeedDown Sdown = new SpeedDown();
         private KillEnemy eKill = new KillEnemy();
+        private GameData GameData = new GameData();
 
         public ExpertGame()
         {
             InitializeComponent();
 
-            try
-            {
-                using (ResourceReader resx = new ResourceReader(@".\xs.res"))
-                {
-                    IDictionaryEnumerator d = resx.GetEnumerator();
-                    while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                    resx.Close();
-                }
-            }
-            catch { hScoreTxt.Text = "1000"; }
+            hScoreTxt.Text = GameData.Load(2).ToString();
+
             new Settings();
             Settings.level = 1;
             Settings.speed = 180;
@@ -364,6 +360,7 @@ namespace SnakeGame
 
         private void reset()
         {
+            Settings.gameOver = false;
             Settings.level = 1;
             Settings.next = (Settings.level * 3) / 2;
             Settings.speed = 180;
@@ -403,18 +400,8 @@ namespace SnakeGame
         {
             reset();
             Settings.gameOver = true;
-            using (ResourceWriter resx = new ResourceWriter(@".\xs.res"))
-            {
-                if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
-                    resx.AddResource("HighScore", Convert.ToString(Settings.score));
-                resx.Close();
-            }
-            using (ResourceReader resxr = new ResourceReader(@".\xs.res"))
-            {
-                IDictionaryEnumerator d = resxr.GetEnumerator();
-                while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                resxr.Close();
-            }
+            GameData.Save(2, Settings.score);
+            hScoreTxt.Text = GameData.Load(2).ToString();
 
         }
 
@@ -512,15 +499,12 @@ namespace SnakeGame
             gameTimer.Interval = Settings.speed;
             Canvas.BackColor = Color.Gray;
 
-            if (Settings.level == 15) using (ResourceWriter resx = new ResourceWriter(@".\mu.res"))
-            {
-                        resx.AddResource("Access", "2");
-                        resx.Close();
-            }
+            if (Settings.level == 10) GameData.Save(0, 2);
         }
 
         private void LblMenu_Click(object sender, EventArgs e)
         {
+            GameData.Write();
             this.Hide();
             Form menu = new Menu();
             menu.Closed += (s, args) => this.Close();

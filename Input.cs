@@ -10,6 +10,7 @@ using System.Collections;
 
 namespace SnakeGame
 {
+    // The input class detects what key the player presses
     internal class Input
     {
         private static Hashtable keyTable = new Hashtable();

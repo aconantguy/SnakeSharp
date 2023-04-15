@@ -8,6 +8,11 @@ using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
+
+    // See NormalGame for code breakdown
+    // Master mode is supposed to be brutally difficult.
+    // It Starts te player off at a 30% faster speed, then doubles it every time upon levelup.
+    // All powerups are removed except for SpeedUp.
     public partial class MasterGame : Form
     {
 
@@ -15,22 +20,14 @@ namespace SnakeGame
         private Circle food = new Circle();
         private Enemy enemy = new Enemy();
         private SpeedUp Sup = new SpeedUp();
-
+        private GameData GameData = new GameData();
 
         public MasterGame()
         {
             InitializeComponent();
 
-            try
-            {
-                using (ResourceReader resx = new ResourceReader(@".\ms.res"))
-                {
-                    IDictionaryEnumerator d = resx.GetEnumerator();
-                    while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                    resx.Close();
-                }
-            }
-            catch { hScoreTxt.Text = "1000"; }
+            hScoreTxt.Text = GameData.Load(3).ToString();
+
             new Settings();
             Settings.level = 1;
             Settings.speed = 140;
@@ -287,6 +284,7 @@ namespace SnakeGame
         private void reset()
         {
             Settings.level = 1;
+            Settings.gameOver = false;
             Settings.next = (Settings.level * 3) / 2;
             Settings.speed = 140;
             gameTimer.Interval = Settings.speed;
@@ -316,18 +314,8 @@ namespace SnakeGame
         {
             reset();
             Settings.gameOver = true;
-            using (ResourceWriter resx = new ResourceWriter(@".\ms.res"))
-            {
-                if (Convert.ToInt16(hScoreTxt.Text) < Settings.score)
-                    resx.AddResource("HighScore", Convert.ToString(Settings.score));
-                resx.Close();
-            }
-            using (ResourceReader resxr = new ResourceReader(@".\ms.res"))
-            {
-                IDictionaryEnumerator d = resxr.GetEnumerator();
-                while (d.MoveNext()) hScoreTxt.Text = d.Value.ToString();
-                resxr.Close();
-            }
+            GameData.Save(3, Settings.score);
+            hScoreTxt.Text = GameData.Load(3).ToString();
 
         }
 
@@ -429,6 +417,7 @@ namespace SnakeGame
 
         private void LblMenu_Click(object sender, EventArgs e)
         {
+            GameData.Write();
             this.Hide();
             Form menu = new Menu();
             menu.Closed += (s, args) => this.Close();

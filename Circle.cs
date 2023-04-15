@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SnakeGame {
 
+    // The base circle class, used for the player character
     internal class Circle
     {
         public int x { get; set; }
@@ -19,6 +20,8 @@ namespace SnakeGame {
             y = 0;
         }
     }
+
+    // Class for the SpeedUp powerup, adds spawned and flash bools
     internal class SpeedUp : Circle
     {
         public bool spawned { get; set; }
@@ -34,6 +37,7 @@ namespace SnakeGame {
         }
     }
 
+    // Class for the SpeedDown powerup, adds spawned and flash bools
     internal class SpeedDown : Circle
     {
         public bool spawned { get; set; }
@@ -49,6 +53,7 @@ namespace SnakeGame {
         }
     }
 
+    // Class for the KillEnemy powerup, adds spawned, flash and effect bools
     internal class KillEnemy : Circle
     {
         public bool spawned { get; set; }
@@ -64,6 +69,9 @@ namespace SnakeGame {
             effect = false;
         }
     }
+
+    // Class for the enemy, like a player character but with randomized speed, range and position.
+    // It also has a spawn period where the player takes no damage if the enemy touches it.
     internal class Enemy : Circle
     {
         public int speed { get; set; }
